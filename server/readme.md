@@ -1,3 +1,4 @@
+```bash
 ├── config
 │   └── Database.js                 <== 1. Pertama kita membuat dlu file Database.js, kita koneksikan mysql ke kode kita
 ├── controllers
@@ -17,4 +18,6 @@
 │   ├── authRoute.js                <== 8. Kedelapan kita buat route untuk authentikasi user
 │   ├── productRoute.js             <== 10. Kesepuluh kita buat route untuk product
 │   └── userRoute.js                <== 5. Kelima kita buat route untuk user mengambil api yang kita buat
-└── .env                            <== 2.1. Jangan lupa buat file .env untuk menyimpan data" sehingga kita tidak perlu menulisnya di kode
+└── .env                            <== 2.1. Jangan lupa buat file .env untuk menyimpan data-data sehingga kita tidak perlu menulisnya di kode
+
+```
