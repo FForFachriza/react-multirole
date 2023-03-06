@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Breadcumbs from "../components/BreadcumbsPath/Breadcumbs";
+import { useSelector, useDispatch } from "react-redux";
 
 const AddUser = () => {
+  const dispatch = useDispatch();
+  const getPadding = useSelector((state) => state.padding.padding);
   const [getInputUser, setInputUser] = useState({
     name: "",
     email: "",
@@ -64,7 +67,7 @@ const AddUser = () => {
   };
 
   return (
-    <section className="md:ml-64 ml-0 p-6">
+    <section className={`duration-300 transition-all  ${getPadding}`}>
       <Breadcumbs path={"/users"} pathname={"Users"} pathSecond={"/users/add"} pathnameSecond={"Add"} />
       <form>
         <div className="flex h-screen gap-6 flex-col pt-6">
@@ -118,7 +121,10 @@ const AddUser = () => {
               <label className="ml-2 text-sm font-bold text-red-400">{getInputUser.errPassword}</label>
             </div>
           )}
-          <button onClick={submitHandler} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <button
+            onClick={submitHandler}
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
             Submit
           </button>
         </div>

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import Breadcumbs from "../components/BreadcumbsPath/Breadcumbs";
+import { useSelector, useDispatch } from "react-redux";
 
 const AddProduct = () => {
+  const dispatch = useDispatch();
+  const getPadding = useSelector((state) => state.padding.padding);
   const [getInputUser, setInputUser] = useState({
     productName: "",
     price: "",
@@ -29,7 +32,7 @@ const AddProduct = () => {
     });
   };
   return (
-    <section className="md:ml-64 ml-0 p-6">
+    <section className={`${getPadding} duration-300 transition-all`}>
       <Breadcumbs path={"/products"} pathname={"Products"} pathSecond={"/products/add"} pathnameSecond={"Add"} />
       <form>
         <div className="flex h-screen gap-6 flex-col pt-6">
