@@ -1,12 +1,17 @@
-import React from 'react'
-import Breadcumbs from '../components/BreadcumbsPath/Breadcumbs'
+import React from "react";
+import Breadcumbs from "../components/BreadcumbsPath/Breadcumbs";
+import { useSelector, useDispatch } from "react-redux";
 const Dashboard = () => {
-  
-  return (
-    <section className='md:ml-64 ml-0 p-6'>
-      <Breadcumbs />
-</section>
-  )
-}
+  const dispatch = useDispatch();
+  const getPadding = useSelector((state) => state.padding.padding);
 
-export default Dashboard
+  return (
+    // ,l-64
+    <section className={`duration-300 transition-all  ${getPadding}`}>
+      <h1 className="font-bold text-2xl">Welcome Users</h1>
+      <Breadcumbs />
+    </section>
+  );
+};
+
+export default Dashboard;
