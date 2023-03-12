@@ -6,10 +6,9 @@ import { whoAmI } from "../features/authSlice";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const { getPadding } = useSelector((state) => state.padding.padding);
+  const getPadding = useSelector((state) => state.padding.padding);
   const navigate = useNavigate();
-  const { IsError } = useSelector((state) => state.auth);
-  const getAllState = useSelector((state) => state);
+  const { IsError, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(whoAmI());
@@ -23,8 +22,8 @@ const Dashboard = () => {
 
   return (
     // ,l-64
-    <section className={`duration-300 transition-all  ${getPadding}`}>
-      <h1 className="font-bold text-2xl">Welcome Users</h1>
+    <section className={` ${getPadding} duration-300 transition-all `}>
+      <h1 className="font-bold text-2xl">Welcome {user && user.user.name}</h1>
       <Breadcumbs />
     </section>
   );

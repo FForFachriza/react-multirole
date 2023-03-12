@@ -1,13 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Breadcumbs from "../components/BreadcumbsPath/Breadcumbs";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { whoAmI } from "../features/authSlice";
+import axios from "axios";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const AddProduct = () => {
+  const MySwal = withReactContent(Swal);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { IsError } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(whoAmI());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (IsError === true) {
+      navigate("/");
+    }
+  }, [IsError, navigate]);
+
   const getPadding = useSelector((state) => state.padding.padding);
   const [getInputUser, setInputUser] = useState({
     productName: "",
     price: "",
+    errorMessage: "",
   });
 
   const productHandler = (e) => {
@@ -24,12 +44,39 @@ const AddProduct = () => {
     }));
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    console.log({
-      productName: getInputUser.productName,
-      price: getInputUser.price,
-    });
+    try {
+      const { data } = await axios.post("http://localhost:5000/products", {
+        name: getInputUser.productName,
+        price: getInputUser.price,
+      });
+      MySwal.fire({
+        title: "Success",
+        text: data.message,
+        icon: "success",
+        confirmButtonText: "Ok",
+      });
+      setInputUser({
+        productName: "",
+        price: "",
+        errorMessage: "",
+      });
+      navigate("/products");
+    } catch (error) {
+      if (error.response) {
+        setInputUser((prevState) => ({
+          ...prevState,
+          errorMessage: error.response.data.message,
+        }));
+        MySwal.fire({
+          title: "Error",
+          text: error.response.data.message,
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
+      }
+    }
   };
   return (
     <section className={`${getPadding} duration-300 transition-all`}>

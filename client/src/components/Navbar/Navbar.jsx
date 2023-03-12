@@ -11,7 +11,7 @@ const Navbar = () => {
   const [getCollapse, setCollapse] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user} = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const sidebarClicked = useSelector((state) => state.padding.sidebarClicked);
   console.log(useSelector((state) => state.padding.sidebarClicked));
 
@@ -22,8 +22,6 @@ const Navbar = () => {
     dispatch(reset());
     navigate("/");
   };
-
-  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -183,7 +181,7 @@ const Navbar = () => {
                       </a>
                     </li>
                     <li>
-                      <a 
+                      <a
                         href="#"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                         role="menuitem"
@@ -231,28 +229,32 @@ const Navbar = () => {
               </section>
             </li>
 
-            <li>
-              <section className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                <NavLink
-                  to="/users"
-                  className={({ isActive }) => (isActive ? " h-full fill-blue-500 text-blue-600 font-bold w-full" : "fill-gray-500 w-full")}
-                >
-                  <span className="ml-3 fixed left-11">{sidebarClicked ? "" : "Users"}</span>
-                  <svg
-                    aria-hidden="true"
-                    className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                    fill=""
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
+            {user && user.user.role === "admin" && (
+              <li>
+                <section className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <NavLink
+                    to="/users"
+                    className={({ isActive }) =>
+                      isActive ? " h-full fill-blue-500 text-blue-600 font-bold w-full" : "fill-gray-500 w-full"
+                    }
                   >
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                  {/* <NavLink to="/users" className={({ isActive }) => (isActive ? " h-full text-blue-600 font-bold w-full" : "h-full w-full")}>
-                  <span className="flex-1 ml-3 whitespace-nowrap">{getCollapse ? "" : "Users"}</span>
-                </NavLink> */}
-                </NavLink>
-              </section>
-            </li>
+                    <span className="ml-3 fixed left-11">{sidebarClicked ? "" : "Users"}</span>
+                    <svg
+                      aria-hidden="true"
+                      className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                      fill=""
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    {/* <NavLink to="/users" className={({ isActive }) => (isActive ? " h-full text-blue-600 font-bold w-full" : "h-full w-full")}>
+                             <span className="flex-1 ml-3 whitespace-nowrap">{getCollapse ? "" : "Users"}</span>
+                           </NavLink> */}
+                  </NavLink>
+                </section>
+              </li>
+            )}
             <li>
               <section className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                 <NavLink
@@ -284,7 +286,10 @@ const Navbar = () => {
               </section>
             </li>
             <li>
-              <section onClick={logoutHandler} className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+              <section
+                onClick={logoutHandler}
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
                 <svg
                   aria-hidden="true"
                   className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"

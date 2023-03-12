@@ -1,17 +1,65 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { whoAmI } from "../features/authSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const EditUser = () => {
   const dispatch = useDispatch();
   const getPadding = useSelector((state) => state.padding.padding);
+  const MySwal = withReactContent(Swal);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { IsError, user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(whoAmI());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (IsError === true) {
+      navigate("/");
+    }
+    if (user && user.user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [IsError, navigate, user]);
+
   const [getInputUser, setInputUser] = useState({
     name: "",
     email: "",
     password: "",
     confPassword: "",
     errPassword: "",
+    role: "",
+    errorMessage: "",
   });
+
+  useEffect(() => {
+    const getProductfromID = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:5000/users/${id}`);
+        setInputUser({
+          name: data.name,
+          email: data.email,
+          role: data.role,
+        });
+      } catch (error) {
+        if (error.response) {
+          MySwal.fire({
+            title: "Error",
+            text: error.response.data.message,
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
+        }
+      }
+    };
+    getProductfromID();
+  }, [id]);
 
   const nameHandler = (e) => {
     setInputUser((prevState) => ({
@@ -41,6 +89,13 @@ const EditUser = () => {
     }));
   };
 
+  const roleValueHandler = (e) => {
+    setInputUser((prevState) => ({
+      ...prevState,
+      role: e.target.value,
+    }));
+  };
+
   useEffect(() => {
     if (getInputUser.password !== getInputUser.confPassword) {
       setInputUser((prevState) => ({
@@ -55,14 +110,41 @@ const EditUser = () => {
     }
   }, [getInputUser.password, getInputUser.confPassword]);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    console.log({
-      name: getInputUser.name,
-      email: getInputUser.email,
-      password: getInputUser.password,
-      confPassword: getInputUser.confPassword,
-    });
+    try {
+      const { data } = await axios.patch(`http://localhost:5000/users/${id}`, {
+        name: getInputUser.name,
+        email: getInputUser.email,
+        password: getInputUser.password,
+        role: getInputUser.role,
+        confPassword: getInputUser.confPassword,  
+      });
+      MySwal.fire({
+        title: "Success",
+        text: data.message,
+        icon: "success",
+        confirmButtonText: "Ok",
+      });
+      setInputUser({
+        productName: "",
+        price: "",
+      });
+      navigate("/users");
+    } catch (error) {
+      if (error.response) {
+        setInputUser((prevState) => ({
+          ...prevState,
+          errorMessage: error.response.data.message,
+        }));
+        MySwal.fire({
+          title: "Error",
+          text: error.response.data.message,
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
+      }
+    }
   };
   return (
     <section className={`${getPadding} duration-300 transition-all`}>
@@ -122,6 +204,17 @@ const EditUser = () => {
               placeholder="•••••••••"
               required=""
             />
+          </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role: </label>
+            <select
+              value={getInputUser.role}
+              onChange={roleValueHandler}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+            </select>
           </div>
           {getInputUser.errPassword && (
             <div className="flex items-start mb-6">

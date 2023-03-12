@@ -7,41 +7,17 @@ import withReactContent from "sweetalert2-react-content";
 
 const Login = () => {
   const MySwal = withReactContent(Swal);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const { user, isError, isSuccess, isLoading, message } = useSelector((state) => state.auth);
-  // const isError = useSelector((state) => state.auth.isError);
-  // const isSuccess = useSelector((state) => state.auth.isSuccess);
-  // const isLoading = useSelector((state) => state.auth.isLoading);
-  // const message = useSelector((state) => state.auth.message);
-  // const user = useSelector((state) => state.auth.user);
   const { IsError, IsSuccess, IsLoading, message, user } = useSelector((state) => state.auth);
-  const getAllState = useSelector((state) => state);
   const [getInfoLogin, setInfoLogin] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
-    passwordError: "",
   });
   const getState = useSelector((state) => state.auth);
   useEffect(() => {
     console.log(getState);
   }, [getState]);
-
-  useEffect(() => {
-    if (getInfoLogin.password !== getInfoLogin.confirmPassword) {
-      setInfoLogin((prevState) => ({
-        ...prevState,
-        passwordError: "Passwords do not match",
-      }));
-    } else {
-      setInfoLogin((prevState) => ({
-        ...prevState,
-        passwordError: "",
-      }));
-    }
-  }, [getInfoLogin.password, getInfoLogin.confirmPassword]);
 
   useEffect(() => {
     if (IsSuccess || user) {
@@ -51,7 +27,7 @@ const Login = () => {
   }, [IsSuccess, navigate, dispatch, user]);
 
   useEffect(() => {
-    if (IsError === true || message) {
+    if (message && IsError) {
       MySwal.fire({
         title: <p>{message}</p>,
         icon: "error",
@@ -59,7 +35,7 @@ const Login = () => {
       });
       // dispatch(reset());
     }
-  }, [IsError, message, MySwal, dispatch]);
+  }, [IsError, message, dispatch]);
 
   const emailHandler = (e) => {
     setInfoLogin((prevState) => ({
@@ -75,13 +51,6 @@ const Login = () => {
     }));
   };
 
-  const confirmPasswordHandler = (e) => {
-    setInfoLogin((prevState) => ({
-      ...prevState,
-      confirmPassword: e.target.value,
-    }));
-  };
-  
   const clickHandler = (e) => {
     e.preventDefault();
     dispatch(
@@ -123,20 +92,7 @@ const Login = () => {
                   required=""
                 />
               </div>
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm Password</label>
-                <input
-                  type="password"
-                  onChange={confirmPasswordHandler}
-                  value={getInfoLogin.confirmPassword}
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required=""
-                />
-              </div>
-              {getInfoLogin.passwordError && <div className="text-red-500 text-sm font-bold">{getInfoLogin.passwordError}</div>}
 
-              {IsLoading && <div className="text-red-500 text-sm font-bold">Loading...</div>}
               {IsLoading === true ? (
                 <button
                   disabled

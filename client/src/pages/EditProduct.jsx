@@ -1,12 +1,90 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { whoAmI } from "../features/authSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import axios from "axios";
+
 const EditProduct = () => {
   const dispatch = useDispatch();
   const getPadding = useSelector((state) => state.padding.padding);
+  const MySwal = withReactContent(Swal);
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { IsError } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(whoAmI());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (IsError === true) {
+      navigate("/");
+    }
+  }, [IsError, navigate]);
+
+  useEffect(() => {
+    const getProductfromID = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:5000/products/${id}`);
+        setInputUser({
+          productName: data.name,
+          price: data.price,
+        });
+      } catch (error) {
+        if (error.response) {
+          MySwal.fire({
+            title: "Error",
+            text: error.response.data.message,
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
+        }
+      }
+    };
+    getProductfromID();
+  }, [id]);
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.patch(`http://localhost:5000/products/${id}`, {
+        name: getInputUser.productName,
+        price: getInputUser.price,
+      });
+      MySwal.fire({
+        title: "Success",
+        text: data.message,
+        icon: "success",
+        confirmButtonText: "Ok",
+      });
+      setInputUser({
+        productName: "",
+        price: "",
+      });
+      navigate("/products");
+    } catch (error) {
+      if (error.response) {
+        setInputUser((prevState) => ({
+          ...prevState,
+          errorMessage: error.response.data.message,
+        }));
+        MySwal.fire({
+          title: "Error",
+          text: error.response.data.message,
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
+      }
+    }
+  };
+
   const [getInputUser, setInputUser] = useState({
     productName: "",
     price: "",
+    errorMessage: "",
   });
 
   const productHandler = (e) => {
@@ -21,14 +99,6 @@ const EditProduct = () => {
       ...prevState,
       price: e.target.value,
     }));
-  };
-
-  const submitHandler = (e) => {
-    e.preventDefault();
-    console.log({
-      productName: getInputUser.productName,
-      price: getInputUser.price,
-    });
   };
   return (
     <section className={`${getPadding} duration-300 transition-all`}>
