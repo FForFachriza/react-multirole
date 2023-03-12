@@ -1,30 +1,56 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setPadding, resetPadding, setSidebarClicked } from "../../features/paddingSlice";
+import { logOut, reset } from "../../features/authSlice";
+
 const Navbar = () => {
   const location = useLocation();
   const [getShowDropdown, setShowDropdown] = useState(false);
   const [getBorder, setBorder] = useState(true);
   const [getCollapse, setCollapse] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user} = useSelector((state) => state.auth);
   const sidebarClicked = useSelector((state) => state.padding.sidebarClicked);
-  console.log(useSelector ((state) => state.padding.sidebarClicked));
+  console.log(useSelector((state) => state.padding.sidebarClicked));
 
-  const clickOutside = React.useRef(null);
+  // const clickOutside = React.useRef(null);
+
+  const logoutHandler = () => {
+    dispatch(logOut());
+    dispatch(reset());
+    navigate("/");
+  };
+
+  
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY === 0) {
+        setBorder(true);
+      } else {
+        setBorder(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const collapseSidebar = () => {
     dispatch(setSidebarClicked(!sidebarClicked));
   };
 
   useEffect(() => {
-    if (sidebarClicked === true ) {
+    if (sidebarClicked === true) {
       dispatch(setPadding("md:ml-20 ml-0 p-6"));
     } else {
       dispatch(resetPadding());
     }
   }, [collapseSidebar]);
-
 
   // useEffect(() => {
   //   if (sidebarClicked === true) {
@@ -43,30 +69,17 @@ const Navbar = () => {
     setShowDropdown((prevValue) => !prevValue);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (clickOutside.current && !clickOutside.current.contains(event.target)) {
-        setShowDropdown((prevValue) => !prevValue);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [clickOutside]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY === 0) {
-        setBorder(true);
-      } else {
-        setBorder(false);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (clickOutside.current && !clickOutside.current.contains(event.target)) {
+  //       setShowDropdown((prevValue) => !prevValue);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [clickOutside]);
 
   console.log(getShowDropdown);
   return (
@@ -95,7 +108,7 @@ const Navbar = () => {
               </button>
               {getShowDropdown && (
                 <div
-                  ref={clickOutside}
+                  // ref={clickOutside}
                   className="flex flex-col absolute  mt-[10rem] w-52 bg-white rounded-md overflow-hidden shadow-2xl z-50 "
                 >
                   <div className="transition-all duration-300">
@@ -109,7 +122,7 @@ const Navbar = () => {
                 </div>
               )}
 
-              <a href="https://flowbite.com" className="flex ml-2 md:mr-24">
+              <a onClick={collapseSidebar} className="flex ml-2 md:mr-24 cursor-pointer">
                 <img src="https://img.icons8.com/fluency/512/dashboard-layout.png" className="h-8 mr-3" alt="FlowBite Logo" />
                 <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Dashboard</span>
               </a>
@@ -170,7 +183,7 @@ const Navbar = () => {
                       </a>
                     </li>
                     <li>
-                      <a
+                      <a 
                         href="#"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                         role="menuitem"
@@ -192,7 +205,7 @@ const Navbar = () => {
         } h-screen pt-20  bg-white border-r border-gray-200 `}
         aria-label="Sidebar"
       >
-        <div onClick={collapseSidebar} className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+        <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="space-y-2">
             <li>
               <section className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -271,7 +284,7 @@ const Navbar = () => {
               </section>
             </li>
             <li>
-              <section className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+              <section onClick={logoutHandler} className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                 <svg
                   aria-hidden="true"
                   className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"

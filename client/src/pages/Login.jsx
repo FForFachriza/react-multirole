@@ -11,11 +11,12 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // const { user, isError, isSuccess, isLoading, message } = useSelector((state) => state.auth);
-  const isError = useSelector((state) => state.auth.isError);
-  const isSuccess = useSelector((state) => state.auth.isSuccess);
-  const isLoading = useSelector((state) => state.auth.isLoading);
-  const message = useSelector((state) => state.auth.message);
-  const user = useSelector((state) => state.auth.user);
+  // const isError = useSelector((state) => state.auth.isError);
+  // const isSuccess = useSelector((state) => state.auth.isSuccess);
+  // const isLoading = useSelector((state) => state.auth.isLoading);
+  // const message = useSelector((state) => state.auth.message);
+  // const user = useSelector((state) => state.auth.user);
+  const { IsError, IsSuccess, IsLoading, message, user } = useSelector((state) => state.auth);
   const getAllState = useSelector((state) => state);
   const [getInfoLogin, setInfoLogin] = useState({
     email: "",
@@ -42,6 +43,24 @@ const Login = () => {
     }
   }, [getInfoLogin.password, getInfoLogin.confirmPassword]);
 
+  useEffect(() => {
+    if (IsSuccess || user) {
+      navigate("/dashboard");
+      dispatch(reset());
+    }
+  }, [IsSuccess, navigate, dispatch, user]);
+
+  useEffect(() => {
+    if (IsError === true || message) {
+      MySwal.fire({
+        title: <p>{message}</p>,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      // dispatch(reset());
+    }
+  }, [IsError, message, MySwal, dispatch]);
+
   const emailHandler = (e) => {
     setInfoLogin((prevState) => ({
       ...prevState,
@@ -62,24 +81,6 @@ const Login = () => {
       confirmPassword: e.target.value,
     }));
   };
-
-  useEffect(() => {
-    if (isSuccess || user) {
-      navigate("/dashboard");
-      dispatch(reset());
-    }
-  }, [isSuccess, navigate, dispatch, user]);
-  
-  useEffect(() => {
-    if (isError === true && message) {
-      MySwal.fire({
-        title: <p>{message}</p>,
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-      dispatch(reset());
-    }
-  }, [isError, message, MySwal, dispatch]);
   
   const clickHandler = (e) => {
     e.preventDefault();
@@ -90,7 +91,6 @@ const Login = () => {
       })
     );
   };
-
 
   return (
     <section className="bg-no-repeat bg-cover w-full h-full bg-[url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/MAERSK_MC_KINNEY_M%C3%96LLER_%26_MARSEILLE_MAERSK_%2848694054418%29.jpg/1920px-MAERSK_MC_KINNEY_M%C3%96LLER_%26_MARSEILLE_MAERSK_%2848694054418%29.jpg')]">
@@ -136,8 +136,8 @@ const Login = () => {
               </div>
               {getInfoLogin.passwordError && <div className="text-red-500 text-sm font-bold">{getInfoLogin.passwordError}</div>}
 
-              {isLoading && <div className="text-red-500 text-sm font-bold">Loading...</div>}
-              {isLoading === true ? (
+              {IsLoading && <div className="text-red-500 text-sm font-bold">Loading...</div>}
+              {IsLoading === true ? (
                 <button
                   disabled
                   onClick={clickHandler}
